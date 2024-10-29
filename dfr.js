@@ -6,8 +6,9 @@ function fileExists(filename) {
 
 // Function to check if a value is a valid number
 function validNumber(value) {
-  return typeof value === "number" || 
-         (typeof value === "string" && /^[+-]?(\d+(\.\d*)?|\.\d+)$/.test(value));
+  // Check if value is a number or matches strict numeric format
+  return typeof value === "number" ||
+         (typeof value === "string" && /^-?\d+(\.\d+)?$/.test(value));
 }
 
 // Function to find the dimensions of a dataset or dataframe
@@ -102,3 +103,5 @@ module.exports = {
   calculateMedian,
   createSlice,
 };
+
+//add comments
