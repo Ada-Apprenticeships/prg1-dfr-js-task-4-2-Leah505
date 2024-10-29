@@ -1,6 +1,5 @@
 const fs = require("fs");
 
-// Function to check if file exists
 function fileExists(filename) {
   return fs.existsSync(filename);
 }
