@@ -4,29 +4,38 @@ function fileExists(filename) {
   return fs.existsSync(filename);
 }
 
-// Function to check if a value is a valid number
 function validNumber(value) {
-  // Check if value is a number or matches strict numeric format
   return typeof value === "number" ||
          (typeof value === "string" && /^-?\d+(\.\d+)?$/.test(value));
 }
 
-// Function to find the dimensions of a dataset or dataframe
+/**
+ * Finds the dimensions of a dataset or dataframe.
+ * @param {Array} data - The dataset, which can be a 1D or 2D array.
+ * @returns {Array<number>} An array with two elements: [number of rows, number of columns].
+ * Returns [-1, -1] if the input is invalid or not an array.
+ */
 function dataDimensions(data) {
-  if (!data) return [-1, -1];
-  if (Array.isArray(data[0])) return [data.length, data[0].length];
-  if (Array.isArray(data)) return [data.length, -1];
-  return [-1, -1];
+  if (!Array.isArray(data)) return [-1, -1];
+  return Array.isArray(data[0]) ? [data.length, data[0].length] : [data.length, -1];
 }
 
-// Function to sum all valid numbers in a dataset
+/**
+ * Calculates the sum of all valid numbers in a flat dataset.
+ * @param {Array} dataset - A flat array of values, where some may be numbers or numeric strings.
+ * @returns {number} The sum of all numeric values in the dataset, or 0 if invalid input.
+ */
 function findTotal(dataset) {
   if (!Array.isArray(dataset) || dataset.some(Array.isArray)) return 0;
 
   return dataset.reduce((sum, item) => sum + (validNumber(item) ? parseFloat(item) : 0), 0);
 }
 
-// Function to calculate the mean of a dataset
+/**
+ * Calculates the mean of a dataset.
+ * @param {Array} dataset - A flat array containing values, which may include numeric strings.
+ * @returns {number} The mean of all valid numeric values, or 0 if the dataset is invalid or empty.
+ */
 function calculateMean(dataset) {
   if (!Array.isArray(dataset) || dataset.some(Array.isArray)) return 0;
 
@@ -34,7 +43,11 @@ function calculateMean(dataset) {
   return numbers.length ? numbers.reduce((sum, n) => sum + n, 0) / numbers.length : 0;
 }
 
-// Function to calculate the median of a dataset
+/**
+ * Calculates the median of a dataset.
+ * @param {Array} dataset - A flat array of values, which may include numeric strings.
+ * @returns {number} The median of all valid numeric values, or 0 if the dataset is invalid or empty.
+ */
 function calculateMedian(dataset) {
   if (!Array.isArray(dataset) || dataset.some(Array.isArray)) return 0;
 
@@ -45,7 +58,12 @@ function calculateMedian(dataset) {
   return numbers.length % 2 ? numbers[mid] : (numbers[mid - 1] + numbers[mid]) / 2;
 }
 
-// Function to convert strings in a specified column to numbers
+/**
+ * Converts strings in a specified column of a dataframe to numbers.
+ * @param {Array<Array>} dataframe - A 2D array representing the dataframe.
+ * @param {number} col - The column index to convert.
+ * @returns {number} The count of successfully converted values in the specified column.
+ */
 function convertToNumber(dataframe, col) {
   if (!Array.isArray(dataframe) || !dataframe.length || col < 0) return 0;
 
@@ -59,7 +77,12 @@ function convertToNumber(dataframe, col) {
   return convertedCount;
 }
 
-// Function to flatten a single-column dataframe into a dataset
+/**
+ * Flattens a single-column dataframe into a 1D array.
+ * @param {Array<Array>} dataframe - A 2D array where each subarray represents a row.
+ * @returns {Array} A 1D array containing all values from the single column of the dataframe,
+ * or an empty array if the dataframe has multiple columns.
+ */
 function flatten(dataframe) {
   const [rows, cols] = dataDimensions(dataframe);
   if (cols !== 1) return [];
@@ -67,7 +90,17 @@ function flatten(dataframe) {
   return dataframe.map(row => row[0]);
 }
 
-// Function to load a CSV file into a dataframe, ignoring specified rows/columns
+/**
+ * Loads a CSV file into a dataframe, with options to ignore specified rows and columns.
+ * @param {string} csvFile - The path to the CSV file.
+ * @param {Array<number>} [ignoreRows=[]] - An array of row indices to skip while loading.
+ * @param {Array<number>} [ignoreCols=[]] - An array of column indices to skip while loading.
+ * @returns {Array} An array containing:
+ * - The loaded dataframe (2D array),
+ * - The total number of rows in the original CSV,
+ * - The total number of columns in the original CSV.
+ * If the file does not exist, returns an empty dataframe and [-1, -1].
+ */
 function loadCSV(csvFile, ignoreRows = [], ignoreCols = []) {
   if (!fileExists(csvFile)) return [[], -1, -1];
 
@@ -82,7 +115,16 @@ function loadCSV(csvFile, ignoreRows = [], ignoreCols = []) {
   return [filteredData, totalRows, totalColumns];
 }
 
-// Function to create a slice of the dataframe based on a column pattern and export columns
+/**
+ * Creates a slice of the dataframe based on a column pattern and specific columns to export.
+ * @param {Array<Array>} dataframe - The dataframe (2D array) to slice.
+ * @param {number} columnIndex - The index of the column to check against the pattern.
+ * @param {string} pattern - A string pattern to match against the column value. Use "*" for all rows.
+ * @param {Array<number>} [exportColumns=[]] - An array of column indices to include in the slice.
+ * If empty, includes all columns.
+ * @returns {Array<Array>} A sliced version of the dataframe, containing rows that match the pattern
+ * and only the specified columns.
+ */
 function createSlice(dataframe, columnIndex, pattern, exportColumns = []) {
   if (!Array.isArray(dataframe) || columnIndex < 0) return [];
 
@@ -103,5 +145,3 @@ module.exports = {
   calculateMedian,
   createSlice,
 };
-
-//add comments
